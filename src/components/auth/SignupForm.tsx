@@ -17,20 +17,26 @@ interface SignupFormProps {
 const SignupForm = ({ onBack, onSwitchToLogin }: SignupFormProps) => {
   const [formData, setFormData] = useState({
     name: '',
-    email: '',
+    phone: '',
+    flatNumber: '',
+    apartmentCode: '',
     password: '',
     confirmPassword: '',
-    role: '',
-    phone: '',
-    apartmentNumber: ''
+    role: ''
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isCreatingNewApartment, setIsCreatingNewApartment] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const generateApartmentCode = () => {
+    const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+    setFormData(prev => ({ ...prev, apartmentCode: code }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -54,18 +60,32 @@ const SignupForm = ({ onBack, onSwitchToLogin }: SignupFormProps) => {
       return;
     }
 
+    if (!formData.phone.match(/^\+?[\d\s\-\(\)]+$/)) {
+      toast({ 
+        title: 'Invalid phone number', 
+        description: 'Please enter a valid phone number',
+        variant: 'destructive'
+      });
+      return;
+    }
+
     setIsLoading(true);
 
     // Simulate API call
     setTimeout(() => {
       localStorage.setItem('user', JSON.stringify({ 
-        email: formData.email, 
+        phone: formData.phone, 
         role: formData.role, 
         name: formData.name,
-        phone: formData.phone,
-        apartmentNumber: formData.apartmentNumber 
+        flatNumber: formData.flatNumber,
+        apartmentCode: formData.apartmentCode
       }));
-      toast({ title: 'Account created!', description: 'Welcome to Fix My Flat' });
+      
+      const roleText = formData.role === 'admin' ? 'Admin' : 'Resident';
+      toast({ 
+        title: 'Account created!', 
+        description: `Welcome to Fix My Flat as ${roleText}` 
+      });
       navigate('/dashboard');
       setIsLoading(false);
     }, 1000);
@@ -86,7 +106,7 @@ const SignupForm = ({ onBack, onSwitchToLogin }: SignupFormProps) => {
             <Building2 className="h-8 w-8 text-blue-600" />
             <span className="text-2xl font-bold text-gray-900">Fix My Flat</span>
           </div>
-          <CardTitle className="text-2xl">Create Account</CardTitle>
+          <CardTitle className="text-2xl">Register Account</CardTitle>
           <CardDescription>
             Join our apartment management platform
           </CardDescription>
@@ -105,31 +125,6 @@ const SignupForm = ({ onBack, onSwitchToLogin }: SignupFormProps) => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                value={formData.email}
-                onChange={(e) => handleChange('email', e.target.value)}
-                placeholder="Enter your email"
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="role">Role</Label>
-              <Select value={formData.role} onValueChange={(value) => handleChange('role', value)} required>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select your role" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="tenant">Tenant</SelectItem>
-                  <SelectItem value="admin">Property Admin</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
               <Label htmlFor="phone">Phone Number</Label>
               <Input
                 id="phone"
@@ -141,18 +136,70 @@ const SignupForm = ({ onBack, onSwitchToLogin }: SignupFormProps) => {
               />
             </div>
 
-            {formData.role === 'tenant' && (
-              <div className="space-y-2">
-                <Label htmlFor="apartmentNumber">Apartment Number</Label>
-                <Input
-                  id="apartmentNumber"
-                  value={formData.apartmentNumber}
-                  onChange={(e) => handleChange('apartmentNumber', e.target.value)}
-                  placeholder="e.g., 2A, 15B"
-                  required
-                />
-              </div>
-            )}
+            <div className="space-y-2">
+              <Label htmlFor="role">Role</Label>
+              <Select value={formData.role} onValueChange={(value) => handleChange('role', value)} required>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select your role" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="tenant">Resident</SelectItem>
+                  <SelectItem value="admin">Admin</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="flatNumber">Flat Number</Label>
+              <Input
+                id="flatNumber"
+                value={formData.flatNumber}
+                onChange={(e) => handleChange('flatNumber', e.target.value)}
+                placeholder="e.g., 2A, 15B, 101"
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="apartmentCode">Apartment Code</Label>
+              {formData.role === 'admin' ? (
+                <div className="space-y-2">
+                  <div className="flex gap-2">
+                    <Input
+                      id="apartmentCode"
+                      value={formData.apartmentCode}
+                      onChange={(e) => handleChange('apartmentCode', e.target.value)}
+                      placeholder="Create apartment code"
+                      required
+                    />
+                    <Button 
+                      type="button" 
+                      onClick={generateApartmentCode}
+                      variant="outline"
+                      size="sm"
+                    >
+                      Generate
+                    </Button>
+                  </div>
+                  <p className="text-xs text-gray-500">
+                    As an admin, you can create a new apartment code for residents to join
+                  </p>
+                </div>
+              ) : (
+                <div>
+                  <Input
+                    id="apartmentCode"
+                    value={formData.apartmentCode}
+                    onChange={(e) => handleChange('apartmentCode', e.target.value)}
+                    placeholder="Enter apartment code provided by admin"
+                    required
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Get this code from your apartment admin or another resident
+                  </p>
+                </div>
+              )}
+            </div>
             
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
@@ -201,7 +248,7 @@ const SignupForm = ({ onBack, onSwitchToLogin }: SignupFormProps) => {
             </div>
 
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? 'Creating Account...' : 'Create Account'}
+              {isLoading ? 'Creating Account...' : 'Register'}
             </Button>
           </form>
 

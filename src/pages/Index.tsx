@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Building2, Shield, Wrench, Users, CheckCircle, ArrowRight } from 'lucide-react';
@@ -57,7 +56,7 @@ const Index = () => {
                 Login
               </Button>
               <Button onClick={() => setShowSignup(true)}>
-                Get Started
+                Register
               </Button>
             </div>
           </div>
@@ -76,7 +75,7 @@ const Index = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" onClick={() => setShowSignup(true)} className="text-lg px-8 py-3">
-              Start Managing Today
+              Register Today
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
             <Button size="lg" variant="outline" onClick={() => setShowLogin(true)} className="text-lg px-8 py-3">
@@ -128,7 +127,7 @@ const Index = () => {
             Join hundreds of property managers who have streamlined their operations with Fix My Flat.
           </p>
           <Button size="lg" variant="secondary" onClick={() => setShowSignup(true)} className="text-lg px-8 py-3">
-            Get Started Free
+            Register Free
           </Button>
         </div>
       </section>

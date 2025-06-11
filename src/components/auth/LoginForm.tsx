@@ -14,7 +14,7 @@ interface LoginFormProps {
 }
 
 const LoginForm = ({ onBack, onSwitchToSignup }: LoginFormProps) => {
-  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -27,18 +27,30 @@ const LoginForm = ({ onBack, onSwitchToSignup }: LoginFormProps) => {
     // Simulate API call
     setTimeout(() => {
       // Demo credentials for testing
-      if (email === 'admin@fixmyflat.com' && password === 'admin123') {
-        localStorage.setItem('user', JSON.stringify({ email, role: 'admin', name: 'Admin User' }));
+      if (phone === '+1234567890' && password === 'admin123') {
+        localStorage.setItem('user', JSON.stringify({ 
+          phone, 
+          role: 'admin', 
+          name: 'Admin User',
+          flatNumber: 'A1',
+          apartmentCode: 'DEMO123'
+        }));
         toast({ title: 'Welcome back!', description: 'Logged in successfully as Admin' });
         navigate('/dashboard');
-      } else if (email === 'tenant@fixmyflat.com' && password === 'tenant123') {
-        localStorage.setItem('user', JSON.stringify({ email, role: 'tenant', name: 'John Doe' }));
-        toast({ title: 'Welcome back!', description: 'Logged in successfully as Tenant' });
+      } else if (phone === '+1987654321' && password === 'resident123') {
+        localStorage.setItem('user', JSON.stringify({ 
+          phone, 
+          role: 'tenant', 
+          name: 'John Doe',
+          flatNumber: 'B2',
+          apartmentCode: 'DEMO123'
+        }));
+        toast({ title: 'Welcome back!', description: 'Logged in successfully as Resident' });
         navigate('/dashboard');
       } else {
         toast({ 
           title: 'Login failed', 
-          description: 'Invalid credentials. Try admin@fixmyflat.com/admin123 or tenant@fixmyflat.com/tenant123',
+          description: 'Invalid credentials. Try +1234567890/admin123 or +1987654321/resident123',
           variant: 'destructive'
         });
       }
@@ -69,13 +81,13 @@ const LoginForm = ({ onBack, onSwitchToSignup }: LoginFormProps) => {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="phone">Phone Number</Label>
               <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
+                id="phone"
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="Enter your phone number"
                 required
               />
             </div>
@@ -119,15 +131,15 @@ const LoginForm = ({ onBack, onSwitchToSignup }: LoginFormProps) => {
                 onClick={onSwitchToSignup}
                 className="text-blue-600 hover:underline font-medium"
               >
-                Sign up here
+                Register here
               </button>
             </p>
           </div>
 
           <div className="mt-6 p-4 bg-gray-50 rounded-lg">
             <p className="text-sm text-gray-600 mb-2 font-medium">Demo Credentials:</p>
-            <p className="text-xs text-gray-500">Admin: admin@fixmyflat.com / admin123</p>
-            <p className="text-xs text-gray-500">Tenant: tenant@fixmyflat.com / tenant123</p>
+            <p className="text-xs text-gray-500">Admin: +1234567890 / admin123</p>
+            <p className="text-xs text-gray-500">Resident: +1987654321 / resident123</p>
           </div>
         </CardContent>
       </Card>
