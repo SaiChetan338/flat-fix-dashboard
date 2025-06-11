@@ -31,8 +31,14 @@ const Index = () => {
     }
   ];
 
+  const handleSwitchToSignup = () => {
+    // For now, just hide login and show main page
+    // This can be expanded later to show a signup form
+    setShowLogin(false);
+  };
+
   if (showLogin) {
-    return <LoginForm onBack={() => setShowLogin(false)} />;
+    return <LoginForm onBack={() => setShowLogin(false)} onSwitchToSignup={handleSwitchToSignup} />;
   }
 
   return (
