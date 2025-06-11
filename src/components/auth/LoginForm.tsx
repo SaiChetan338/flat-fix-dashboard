@@ -60,7 +60,7 @@ const LoginForm = ({ onBack, onSwitchToSignup }: LoginFormProps) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
+      <Card className="w-full max-w-md border-beam">
         <CardHeader className="text-center">
           <Button 
             variant="ghost" 

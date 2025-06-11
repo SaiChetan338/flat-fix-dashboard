@@ -1,8 +1,8 @@
+
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Building2, Shield, Wrench, Users, CheckCircle, ArrowRight, Plus } from 'lucide-react';
+import { Building2, Wrench, Users, Shield, CheckCircle, ArrowRight, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import LoginForm from '@/components/auth/LoginForm';
 
 const Index = () => {
@@ -16,7 +16,7 @@ const Index = () => {
     },
     {
       icon: Users,
-      title: "Tenant Communication",
+      title: "Tenant Communication", 
       description: "Streamlined communication between tenants and management"
     },
     {
@@ -109,19 +109,14 @@ const Index = () => {
           
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {features.map((feature, index) => (
-              <Card key={index} className="text-center hover:shadow-lg transition-shadow duration-300">
-                <CardHeader>
-                  <div className="mx-auto bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mb-4">
-                    <feature.icon className="h-8 w-8 text-blue-600" />
-                  </div>
-                  <CardTitle className="text-xl">{feature.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="text-gray-600">
-                    {feature.description}
-                  </CardDescription>
-                </CardContent>
-              </Card>
+              <div key={index} className="feature-card">
+                <feature.icon className="icon" />
+                <div className="textBox">
+                  <p className="text head">{feature.title}</p>
+                  <span>Feature</span>
+                  <p className="text description">{feature.description}</p>
+                </div>
+              </div>
             ))}
           </div>
         </div>
@@ -156,6 +151,91 @@ const Index = () => {
           </p>
         </div>
       </footer>
+
+      <style jsx>{`
+        .feature-card {
+          width: 195px;
+          height: 285px;
+          background: #313131;
+          border-radius: 20px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          transition: 0.2s ease-in-out;
+          margin: 0 auto;
+          position: relative;
+        }
+
+        .icon {
+          height: 30%;
+          width: 30%;
+          position: absolute;
+          transition: 0.2s ease-in-out;
+          z-index: 1;
+          color: white;
+        }
+
+        .textBox {
+          opacity: 0;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 15px;
+          transition: 0.2s ease-in-out;
+          z-index: 2;
+          padding: 20px;
+          text-align: center;
+        }
+
+        .textBox > .text {
+          font-weight: bold;
+          margin: 0;
+        }
+
+        .textBox > .head {
+          font-size: 20px;
+        }
+
+        .textBox > .description {
+          font-size: 14px;
+          line-height: 1.4;
+        }
+
+        .textBox > span {
+          font-size: 12px;
+          color: lightgrey;
+        }
+
+        .feature-card:hover > .textBox {
+          opacity: 1;
+        }
+
+        .feature-card:hover > .icon {
+          height: 65%;
+          width: 65%;
+          filter: blur(7px);
+          animation: anim 3s infinite;
+        }
+
+        @keyframes anim {
+          0% {
+            transform: translateY(0);
+          }
+          50% {
+            transform: translateY(-20px);
+          }
+          100% {
+            transform: translateY(0);
+          }
+        }
+
+        .feature-card:hover {
+          transform: scale(1.04) rotate(-1deg);
+        }
+      `}</style>
     </div>
   );
 };
