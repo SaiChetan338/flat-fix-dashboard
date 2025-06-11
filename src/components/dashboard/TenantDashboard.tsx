@@ -10,11 +10,11 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from '@/hooks/use-toast';
 
 interface User {
-  email: string;
+  phone: string;
   role: string;
   name: string;
-  phone?: string;
-  apartmentNumber?: string;
+  flatNumber?: string;
+  apartmentCode?: string;
 }
 
 interface TenantDashboardProps {

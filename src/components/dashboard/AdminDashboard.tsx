@@ -12,9 +12,11 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from '@/hooks/use-toast';
 
 interface User {
-  email: string;
+  phone: string;
   role: string;
   name: string;
+  flatNumber?: string;
+  apartmentCode?: string;
 }
 
 interface AdminDashboardProps {
