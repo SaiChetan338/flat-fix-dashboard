@@ -82,7 +82,7 @@ const TenantDashboard = ({ user }: TenantDashboardProps) => {
               </div>
               <div>
                 <p className="font-medium text-gray-900">{user.name}</p>
-                <p className="text-sm text-gray-500">Apt {user.apartmentNumber}</p>
+                <p className="text-sm text-gray-500">Apt {user.flatNumber}</p>
               </div>
             </div>
           </div>
