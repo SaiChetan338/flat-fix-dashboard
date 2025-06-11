@@ -1,14 +1,12 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Building2, Shield, Wrench, Users, CheckCircle, ArrowRight } from 'lucide-react';
+import { Building2, Shield, Wrench, Users, CheckCircle, ArrowRight, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import LoginForm from '@/components/auth/LoginForm';
-import SignupForm from '@/components/auth/SignupForm';
 
 const Index = () => {
   const [showLogin, setShowLogin] = useState(false);
-  const [showSignup, setShowSignup] = useState(false);
 
   const features = [
     {
@@ -34,11 +32,7 @@ const Index = () => {
   ];
 
   if (showLogin) {
-    return <LoginForm onBack={() => setShowLogin(false)} onSwitchToSignup={() => { setShowLogin(false); setShowSignup(true); }} />;
-  }
-
-  if (showSignup) {
-    return <SignupForm onBack={() => setShowSignup(false)} onSwitchToLogin={() => { setShowSignup(false); setShowLogin(true); }} />;
+    return <LoginForm onBack={() => setShowLogin(false)} />;
   }
 
   return (
@@ -55,8 +49,11 @@ const Index = () => {
               <Button variant="outline" onClick={() => setShowLogin(true)}>
                 Login
               </Button>
-              <Button onClick={() => setShowSignup(true)}>
-                Register
+              <Button asChild>
+                <Link to="/register-apartment">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Register Apartment
+                </Link>
               </Button>
             </div>
           </div>
@@ -74,9 +71,16 @@ const Index = () => {
             Streamline maintenance requests, manage tenants, and keep your property running smoothly with our comprehensive apartment administration platform.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" onClick={() => setShowSignup(true)} className="text-lg px-8 py-3">
-              Register Today
-              <ArrowRight className="ml-2 h-5 w-5" />
+            <Button size="lg" asChild className="text-lg px-8 py-3">
+              <Link to="/register-apartment">
+                Register New Apartment
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Link>
+            </Button>
+            <Button size="lg" variant="outline" asChild className="text-lg px-8 py-3">
+              <Link to="/resident-registration">
+                Join as Resident
+              </Link>
             </Button>
             <Button size="lg" variant="outline" onClick={() => setShowLogin(true)} className="text-lg px-8 py-3">
               Sign In to Dashboard
@@ -126,8 +130,10 @@ const Index = () => {
           <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
             Join hundreds of property managers who have streamlined their operations with Fix My Flat.
           </p>
-          <Button size="lg" variant="secondary" onClick={() => setShowSignup(true)} className="text-lg px-8 py-3">
-            Register Free
+          <Button size="lg" variant="secondary" asChild className="text-lg px-8 py-3">
+            <Link to="/register-apartment">
+              Register Free
+            </Link>
           </Button>
         </div>
       </section>
