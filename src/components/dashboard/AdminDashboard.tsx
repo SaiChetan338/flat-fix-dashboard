@@ -1,11 +1,9 @@
 
 import { useState } from 'react';
-import { Building2, Ticket, Users, Wrench, LogOut, Menu, X, DollarSign, User, Search, Filter } from 'lucide-react';
+import { Building2, Ticket, Users, Wrench, LogOut, Menu, X, DollarSign, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import TicketManagement from '@/components/tickets/TicketManagement';
 import TenantManagement from '@/components/tenants/TenantManagement';
 import TechnicianManagement from '@/components/technicians/TechnicianManagement';
@@ -31,8 +29,6 @@ interface AdminDashboardProps {
 const AdminDashboard = ({ user }: AdminDashboardProps) => {
   const [activeTab, setActiveTab] = useState('overview');
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedFilter, setSelectedFilter] = useState("all");
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -50,7 +46,7 @@ const AdminDashboard = ({ user }: AdminDashboardProps) => {
 
   const menuItems = [
     { id: 'overview', label: 'Overview', icon: Building2 },
-    { id: 'tickets', label: 'All Tickets', icon: Ticket },
+    { id: 'tickets', label: 'Tickets', icon: Ticket },
     { id: 'tenants', label: 'Tenants', icon: Users },
     { id: 'technicians-mgmt', label: 'Manage Technicians', icon: Wrench },
     { id: 'technicians-list', label: 'Technicians', icon: Wrench },
@@ -178,21 +174,11 @@ const AdminDashboard = ({ user }: AdminDashboardProps) => {
           {activeTab === 'profile' && <ProfilePage user={user} />}
           
           {activeTab === 'overview' && (
-            <div className="space-y-6 max-w-6xl mx-auto">
-              {/* Welcome Header */}
-              <div className="mb-8">
-                <h2 className="text-3xl font-bold text-gray-900 mb-2">
-                  Welcome back, {user.name}
-                </h2>
-                <p className="text-gray-600">
-                  Manage all building operations and resident requests efficiently.
-                </p>
-              </div>
-
+            <div className="space-y-6">
               {/* Stats Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {stats.map((stat, index) => (
-                  <Card key={index} className="bg-white/80 backdrop-blur-sm border-0 shadow-md">
+                  <Card key={index}>
                     <CardHeader className="pb-3">
                       <CardDescription>{stat.title}</CardDescription>
                       <CardTitle className="text-3xl">{stat.value}</CardTitle>
@@ -204,8 +190,7 @@ const AdminDashboard = ({ user }: AdminDashboardProps) => {
                 ))}
               </div>
 
-              {/* Quick Actions */}
-              <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-md">
+              <Card>
                 <CardHeader>
                   <CardTitle>Quick Actions</CardTitle>
                   <CardDescription>Manage your property efficiently</CardDescription>
@@ -224,42 +209,6 @@ const AdminDashboard = ({ user }: AdminDashboardProps) => {
                       <Wrench className="h-6 w-6" />
                       <span>Manage Technicians</span>
                     </Button>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Filters for Overview */}
-              <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-md">
-                <CardContent className="p-6">
-                  <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-                    <Input 
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      placeholder="Search tickets, residents..."
-                      className="max-w-md"
-                    />
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="outline">
-                          <Filter className="h-4 w-4 mr-2" />
-                          Filter
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => setSelectedFilter("all")}>
-                          All Items
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setSelectedFilter("urgent")}>
-                          Urgent
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setSelectedFilter("pending")}>
-                          Pending
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setSelectedFilter("completed")}>
-                          Completed
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
                   </div>
                 </CardContent>
               </Card>
