@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { Building2, Ticket, Users, Wrench, LogOut, Menu, X, DollarSign } from 'lucide-react';
+import { Building2, Ticket, Users, Wrench, LogOut, Menu, X, DollarSign, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -10,6 +10,7 @@ import TechnicianManagement from '@/components/technicians/TechnicianManagement'
 import TechniciansList from '@/components/technicians/TechniciansList';
 import NeighborsList from '@/components/neighbors/NeighborsList';
 import MaintenanceHistory from '@/components/maintenance/MaintenanceHistory';
+import ProfilePage from '@/components/profile/ProfilePage';
 import { useNavigate } from 'react-router-dom';
 import { toast } from '@/hooks/use-toast';
 
@@ -54,6 +55,7 @@ const AdminDashboard = ({ user }: AdminDashboardProps) => {
   ];
 
   const getPageTitle = () => {
+    if (activeTab === 'profile') return 'My Profile';
     const item = menuItems.find(item => item.id === activeTab);
     return item?.label || 'Dashboard';
   };
@@ -89,17 +91,23 @@ const AdminDashboard = ({ user }: AdminDashboardProps) => {
 
           {/* User Info */}
           <div className="p-6 border-b">
-            <div className="flex items-center space-x-3">
+            <button
+              onClick={() => {
+                setActiveTab('profile');
+                setSidebarOpen(false);
+              }}
+              className="flex items-center space-x-3 w-full hover:bg-gray-50 p-2 rounded-lg transition-colors"
+            >
               <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
                 <span className="text-white font-medium">
                   {user.name.split(' ').map(n => n[0]).join('')}
                 </span>
               </div>
-              <div>
+              <div className="text-left">
                 <p className="font-medium text-gray-900">{user.name}</p>
                 <p className="text-sm text-gray-500">Administrator</p>
               </div>
-            </div>
+            </button>
           </div>
 
           {/* Navigation */}
@@ -163,6 +171,8 @@ const AdminDashboard = ({ user }: AdminDashboardProps) => {
 
         {/* Content */}
         <main className="flex-1 overflow-auto p-4 lg:p-6">
+          {activeTab === 'profile' && <ProfilePage user={user} />}
+          
           {activeTab === 'overview' && (
             <div className="space-y-6">
               {/* Stats Grid */}
@@ -180,7 +190,6 @@ const AdminDashboard = ({ user }: AdminDashboardProps) => {
                 ))}
               </div>
 
-              {/* Quick Actions */}
               <Card>
                 <CardHeader>
                   <CardTitle>Quick Actions</CardTitle>
