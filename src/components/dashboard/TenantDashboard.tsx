@@ -1,11 +1,14 @@
 
 import { useState } from 'react';
-import { Building2, Plus, Ticket, LogOut, Menu, X } from 'lucide-react';
+import { Building2, Plus, Ticket, LogOut, Menu, X, Wrench, Users, DollarSign } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import CreateTicketForm from '@/components/tickets/CreateTicketForm';
 import TenantTicketList from '@/components/tickets/TenantTicketList';
+import TechniciansList from '@/components/technicians/TechniciansList';
+import NeighborsList from '@/components/neighbors/NeighborsList';
+import MaintenanceHistory from '@/components/maintenance/MaintenanceHistory';
 import { useNavigate } from 'react-router-dom';
 import { toast } from '@/hooks/use-toast';
 
@@ -40,8 +43,16 @@ const TenantDashboard = ({ user }: TenantDashboardProps) => {
 
   const menuItems = [
     { id: 'tickets', label: 'My Tickets', icon: Ticket },
-    { id: 'create', label: 'Report Issue', icon: Plus }
+    { id: 'create', label: 'Report Issue', icon: Plus },
+    { id: 'technicians', label: 'Technicians', icon: Wrench },
+    { id: 'neighbors', label: 'My Neighbors', icon: Users },
+    { id: 'maintenance', label: 'Maintenance', icon: DollarSign }
   ];
+
+  const getPageTitle = () => {
+    const item = menuItems.find(item => item.id === activeView);
+    return item?.label || 'Dashboard';
+  };
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -137,7 +148,7 @@ const TenantDashboard = ({ user }: TenantDashboardProps) => {
                 <Menu className="h-5 w-5" />
               </Button>
               <h1 className="text-2xl font-bold text-gray-900">
-                {activeView === 'tickets' ? 'My Tickets' : 'Report Issue'}
+                {getPageTitle()}
               </h1>
             </div>
             <Badge variant="secondary" className="hidden sm:inline-flex">
@@ -191,6 +202,29 @@ const TenantDashboard = ({ user }: TenantDashboardProps) => {
             <CreateTicketForm 
               user={user} 
               onSuccess={() => setActiveView('tickets')} 
+            />
+          )}
+
+          {activeView === 'technicians' && (
+            <TechniciansList 
+              apartmentCode={user.apartmentCode || ''} 
+              isAdmin={false}
+            />
+          )}
+
+          {activeView === 'neighbors' && (
+            <NeighborsList 
+              apartmentCode={user.apartmentCode || ''} 
+              currentUserFlatNumber={user.flatNumber}
+            />
+          )}
+
+          {activeView === 'maintenance' && (
+            <MaintenanceHistory 
+              apartmentCode={user.apartmentCode || ''} 
+              isAdmin={false}
+              userFlatNumber={user.flatNumber}
+              userName={user.name}
             />
           )}
         </main>

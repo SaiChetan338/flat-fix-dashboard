@@ -1,13 +1,15 @@
 
 import { useState } from 'react';
-import { Building2, Ticket, Users, Wrench, LogOut, Menu, X } from 'lucide-react';
+import { Building2, Ticket, Users, Wrench, LogOut, Menu, X, DollarSign } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import TicketManagement from '@/components/tickets/TicketManagement';
 import TenantManagement from '@/components/tenants/TenantManagement';
 import TechnicianManagement from '@/components/technicians/TechnicianManagement';
+import TechniciansList from '@/components/technicians/TechniciansList';
+import NeighborsList from '@/components/neighbors/NeighborsList';
+import MaintenanceHistory from '@/components/maintenance/MaintenanceHistory';
 import { useNavigate } from 'react-router-dom';
 import { toast } from '@/hooks/use-toast';
 
@@ -45,8 +47,16 @@ const AdminDashboard = ({ user }: AdminDashboardProps) => {
     { id: 'overview', label: 'Overview', icon: Building2 },
     { id: 'tickets', label: 'Tickets', icon: Ticket },
     { id: 'tenants', label: 'Tenants', icon: Users },
-    { id: 'technicians', label: 'Technicians', icon: Wrench }
+    { id: 'technicians-mgmt', label: 'Manage Technicians', icon: Wrench },
+    { id: 'technicians-list', label: 'Technicians', icon: Wrench },
+    { id: 'neighbors', label: 'All Residents', icon: Users },
+    { id: 'maintenance', label: 'Maintenance', icon: DollarSign }
   ];
+
+  const getPageTitle = () => {
+    const item = menuItems.find(item => item.id === activeTab);
+    return item?.label || 'Dashboard';
+  };
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -108,7 +118,7 @@ const AdminDashboard = ({ user }: AdminDashboardProps) => {
                 }`}
               >
                 <item.icon className="h-5 w-5" />
-                <span className="font-medium">{item.label}</span>
+                <span className="font-medium text-sm">{item.label}</span>
               </button>
             ))}
           </nav>
@@ -142,7 +152,7 @@ const AdminDashboard = ({ user }: AdminDashboardProps) => {
                 <Menu className="h-5 w-5" />
               </Button>
               <h1 className="text-2xl font-bold text-gray-900">
-                {menuItems.find(item => item.id === activeTab)?.label || 'Dashboard'}
+                {getPageTitle()}
               </h1>
             </div>
             <Badge variant="secondary" className="hidden sm:inline-flex">
@@ -186,7 +196,7 @@ const AdminDashboard = ({ user }: AdminDashboardProps) => {
                       <Users className="h-6 w-6" />
                       <span>View Tenants</span>
                     </Button>
-                    <Button onClick={() => setActiveTab('technicians')} variant="outline" className="h-20 flex-col space-y-2">
+                    <Button onClick={() => setActiveTab('technicians-mgmt')} variant="outline" className="h-20 flex-col space-y-2">
                       <Wrench className="h-6 w-6" />
                       <span>Manage Technicians</span>
                     </Button>
@@ -198,7 +208,28 @@ const AdminDashboard = ({ user }: AdminDashboardProps) => {
 
           {activeTab === 'tickets' && <TicketManagement />}
           {activeTab === 'tenants' && <TenantManagement />}
-          {activeTab === 'technicians' && <TechnicianManagement />}
+          {activeTab === 'technicians-mgmt' && <TechnicianManagement />}
+          
+          {activeTab === 'technicians-list' && (
+            <TechniciansList 
+              apartmentCode={user.apartmentCode || ''} 
+              isAdmin={true}
+            />
+          )}
+
+          {activeTab === 'neighbors' && (
+            <NeighborsList 
+              apartmentCode={user.apartmentCode || ''}
+            />
+          )}
+
+          {activeTab === 'maintenance' && (
+            <MaintenanceHistory 
+              apartmentCode={user.apartmentCode || ''} 
+              isAdmin={true}
+              userName={user.name}
+            />
+          )}
         </main>
       </div>
     </div>
