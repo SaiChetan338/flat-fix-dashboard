@@ -1,9 +1,13 @@
 
 import { useState } from 'react';
-import { Building2, Plus, Ticket, LogOut, Menu, X, Wrench, Users, DollarSign, User } from 'lucide-react';
+import { Building2, Plus, Ticket, LogOut, Menu, X, Wrench, Users, DollarSign, User, Search, Filter, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import CreateTicketForm from '@/components/tickets/CreateTicketForm';
 import TenantTicketList from '@/components/tickets/TenantTicketList';
 import TechniciansList from '@/components/technicians/TechniciansList';
@@ -28,12 +32,37 @@ interface TenantDashboardProps {
 const TenantDashboard = ({ user }: TenantDashboardProps) => {
   const [activeView, setActiveView] = useState('tickets');
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedFilter, setSelectedFilter] = useState("all");
+  const [quickComplaintType, setQuickComplaintType] = useState("");
+  const [customComplaintType, setCustomComplaintType] = useState("");
+  const [quickComplaintDescription, setQuickComplaintDescription] = useState("");
   const navigate = useNavigate();
 
   const handleLogout = () => {
     localStorage.removeItem('user');
     toast({ title: 'Logged out', description: 'You have been logged out successfully' });
     navigate('/');
+  };
+
+  const handleQuickComplaintSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const complaintType = quickComplaintType === "Other" ? customComplaintType : quickComplaintType;
+    if (!complaintType || !quickComplaintDescription.trim()) return;
+    
+    // This would normally submit to your database
+    console.log('Submitting complaint:', {
+      type: complaintType,
+      description: quickComplaintDescription,
+      user: user
+    });
+    
+    // Reset form
+    setQuickComplaintType("");
+    setCustomComplaintType("");
+    setQuickComplaintDescription("");
+    
+    toast({ title: 'Complaint submitted', description: 'Your complaint has been submitted successfully' });
   };
 
   const stats = [
@@ -170,11 +199,21 @@ const TenantDashboard = ({ user }: TenantDashboardProps) => {
           {activeView === 'profile' && <ProfilePage user={user} />}
           
           {activeView === 'tickets' && (
-            <div className="space-y-6">
+            <div className="space-y-6 max-w-6xl mx-auto">
+              {/* Welcome Header */}
+              <div className="mb-8">
+                <h2 className="text-3xl font-bold text-gray-900 mb-2">
+                  Hey! {user.name}
+                </h2>
+                <p className="text-gray-600">
+                  Track and manage all your building complaints efficiently.
+                </p>
+              </div>
+
               {/* Stats Grid */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {stats.map((stat, index) => (
-                  <Card key={index}>
+                  <Card key={index} className="bg-white/80 backdrop-blur-sm border-0 shadow-md">
                     <CardHeader className="pb-3">
                       <CardDescription>{stat.title}</CardDescription>
                       <CardTitle className="text-3xl">{stat.value}</CardTitle>
@@ -186,19 +225,110 @@ const TenantDashboard = ({ user }: TenantDashboardProps) => {
                 ))}
               </div>
 
-              <Card>
+              {/* Quick Complaint Form */}
+              <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-md">
                 <CardHeader>
-                  <CardTitle>Need Help?</CardTitle>
-                  <CardDescription>Report a maintenance issue quickly</CardDescription>
+                  <CardTitle>Quick Complaint Submission</CardTitle>
+                  <CardDescription>Submit a new complaint quickly</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <Button 
-                    onClick={() => setActiveView('create')}
-                    className="w-full md:w-auto"
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Report New Issue
-                  </Button>
+                  <form onSubmit={handleQuickComplaintSubmit} className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
+                        <Input value={user.name} disabled className="bg-gray-50" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Apartment</label>
+                        <Input value={`${user.flatNumber}, ${user.apartmentCode}`} disabled className="bg-gray-50" />
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Complaint Type</label>
+                        <Select value={quickComplaintType} onValueChange={setQuickComplaintType}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select complaint type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Plumbing">Plumbing</SelectItem>
+                            <SelectItem value="Electrical">Electrical</SelectItem>
+                            <SelectItem value="HVAC">HVAC</SelectItem>
+                            <SelectItem value="Mechanical">Mechanical</SelectItem>
+                            <SelectItem value="Noise">Noise</SelectItem>
+                            <SelectItem value="Parking">Parking</SelectItem>
+                            <SelectItem value="Security">Security</SelectItem>
+                            <SelectItem value="Other">Other</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      {quickComplaintType === "Other" && (
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Custom Type</label>
+                          <Input
+                            value={customComplaintType}
+                            onChange={(e) => setCustomComplaintType(e.target.value)}
+                            placeholder="Enter complaint type"
+                          />
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                      <Textarea
+                        value={quickComplaintDescription}
+                        onChange={(e) => setQuickComplaintDescription(e.target.value)}
+                        placeholder="Describe your complaint in detail..."
+                        className="min-h-[80px]"
+                      />
+                    </div>
+                    
+                    <Button 
+                      type="submit"
+                      disabled={!quickComplaintType || (quickComplaintType === "Other" && !customComplaintType.trim()) || !quickComplaintDescription.trim()}
+                    >
+                      <Send className="h-4 w-4 mr-2" />
+                      Submit Complaint
+                    </Button>
+                  </form>
+                </CardContent>
+              </Card>
+
+              {/* Filters */}
+              <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-md">
+                <CardContent className="p-6">
+                  <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+                    <Input 
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      placeholder="Search complaints..."
+                      className="max-w-md"
+                    />
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline">
+                          <Filter className="h-4 w-4 mr-2" />
+                          Filter
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => setSelectedFilter("all")}>
+                          All Complaints
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setSelectedFilter("completed")}>
+                          Completed
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setSelectedFilter("in-progress")}>
+                          In Progress
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setSelectedFilter("your-complaints")}>
+                          Your Complaints
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 </CardContent>
               </Card>
 
