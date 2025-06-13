@@ -173,7 +173,7 @@ const TicketManagement = () => {
   );
 
   const unassignedTickets = tickets.filter(t => t.status === 'unassigned');
-  const assignedTickets = tickets.filter(t => t.status === 'assigned');
+  const inProgressTickets = tickets.filter(t => t.status === 'assigned');
   const clearedTickets = tickets.filter(t => t.status === 'cleared');
 
   return (
@@ -196,21 +196,33 @@ const TicketManagement = () => {
         </div>
       </div>
 
-      <Tabs defaultValue="unassigned" className="space-y-4">
+      <Tabs defaultValue="in-progress" className="space-y-4">
         <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="in-progress" className="flex items-center space-x-2">
+            <User className="h-4 w-4" />
+            <span>In Progress ({inProgressTickets.length})</span>
+          </TabsTrigger>
           <TabsTrigger value="unassigned" className="flex items-center space-x-2">
             <AlertCircle className="h-4 w-4" />
             <span>Unassigned ({unassignedTickets.length})</span>
-          </TabsTrigger>
-          <TabsTrigger value="assigned" className="flex items-center space-x-2">
-            <User className="h-4 w-4" />
-            <span>Assigned ({assignedTickets.length})</span>
           </TabsTrigger>
           <TabsTrigger value="cleared" className="flex items-center space-x-2">
             <CheckCircle className="h-4 w-4" />
             <span>Cleared ({clearedTickets.length})</span>
           </TabsTrigger>
         </TabsList>
+
+        <TabsContent value="in-progress" className="space-y-4">
+          {inProgressTickets.length === 0 ? (
+            <Card>
+              <CardContent className="text-center py-8">
+                <p className="text-gray-500">No tickets in progress</p>
+              </CardContent>
+            </Card>
+          ) : (
+            inProgressTickets.map(renderTicketCard)
+          )}
+        </TabsContent>
 
         <TabsContent value="unassigned" className="space-y-4">
           {unassignedTickets.length === 0 ? (
@@ -221,18 +233,6 @@ const TicketManagement = () => {
             </Card>
           ) : (
             unassignedTickets.map(renderTicketCard)
-          )}
-        </TabsContent>
-
-        <TabsContent value="assigned" className="space-y-4">
-          {assignedTickets.length === 0 ? (
-            <Card>
-              <CardContent className="text-center py-8">
-                <p className="text-gray-500">No assigned tickets</p>
-              </CardContent>
-            </Card>
-          ) : (
-            assignedTickets.map(renderTicketCard)
           )}
         </TabsContent>
 

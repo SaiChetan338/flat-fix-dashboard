@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Building2, Plus, Ticket, LogOut, Menu, X, Wrench, Users, DollarSign, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -36,12 +37,13 @@ const TenantDashboard = ({ user }: TenantDashboardProps) => {
   };
 
   const stats = [
-    { title: 'Active Tickets', value: '3', description: 'Currently open requests' },
-    { title: 'Resolved', value: '12', description: 'Issues resolved this year' }
+    { title: 'Open Tickets', value: '5', description: 'Unassigned tickets' },
+    { title: 'In Progress', value: '8', description: 'Currently being worked on' },
+    { title: 'Resolved', value: '12', description: 'Completed this month' }
   ];
 
   const menuItems = [
-    { id: 'tickets', label: 'My Tickets', icon: Ticket },
+    { id: 'tickets', label: 'All Tickets', icon: Ticket },
     { id: 'create', label: 'Report Issue', icon: Plus },
     { id: 'technicians', label: 'Technicians', icon: Wrench },
     { id: 'neighbors', label: 'My Neighbors', icon: Users },
@@ -170,7 +172,7 @@ const TenantDashboard = ({ user }: TenantDashboardProps) => {
           {activeView === 'tickets' && (
             <div className="space-y-6">
               {/* Stats Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {stats.map((stat, index) => (
                   <Card key={index}>
                     <CardHeader className="pb-3">
