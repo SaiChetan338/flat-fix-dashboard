@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -84,7 +83,7 @@ const TenantTicketList = ({ user }: TenantTicketListProps) => {
     }
   ]);
 
-  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [othersStatusFilter, setOthersStatusFilter] = useState<string>('all');
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -113,90 +112,116 @@ const TenantTicketList = ({ user }: TenantTicketListProps) => {
     }
   };
 
-  const filteredTickets = tickets.filter(ticket => {
-    if (statusFilter === 'all') return true;
-    return ticket.status === statusFilter;
+  // Get current user's tickets (assuming we identify by tenant name)
+  const myTickets = tickets.filter(ticket => ticket.tenant === user.name);
+  
+  // Get other users' tickets
+  const othersTickets = tickets.filter(ticket => ticket.tenant !== user.name);
+
+  // Filter others' tickets based on status filter
+  const filteredOthersTickets = othersTickets.filter(ticket => {
+    if (othersStatusFilter === 'all') return true;
+    return ticket.status === othersStatusFilter;
   });
 
-  const unassignedTickets = tickets.filter(t => t.status === 'unassigned');
-  const inProgressTickets = tickets.filter(t => t.status === 'in-progress');
-  const resolvedTickets = tickets.filter(t => t.status === 'resolved');
+  const renderTicketCard = (ticket: Ticket) => (
+    <Card key={ticket.id} className={`border-l-4 ${getStatusBorderColor(ticket.status)}`}>
+      <CardHeader className="pb-3">
+        <div className="flex items-start justify-between">
+          <div>
+            <CardTitle className="text-lg">#{ticket.id} - {ticket.title}</CardTitle>
+            <CardDescription className="mt-1">
+              Submitted by {ticket.tenant} (Apt {ticket.apartment}) on {ticket.createdAt}
+            </CardDescription>
+          </div>
+          <div className="flex space-x-2">
+            <Badge variant={getStatusColor(ticket.status) as any}>
+              {getStatusIcon(ticket.status)}
+              <span className="ml-1 capitalize">{ticket.status.replace('-', ' ')}</span>
+            </Badge>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <p className="text-gray-600 mb-4">{ticket.description}</p>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-4 text-sm text-gray-500">
+            <span className="flex items-center">
+              <Wrench className="h-4 w-4 mr-1" />
+              {ticket.category}
+            </span>
+          </div>
+          <Button variant="outline" size="sm">
+            <MessageSquare className="h-4 w-4 mr-1" />
+            Add Comment
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
 
   return (
     <div className="space-y-6">
+      {/* My Tickets Section */}
       <Card>
         <CardHeader>
-          <CardTitle>All Maintenance Requests</CardTitle>
+          <CardTitle>My Tickets</CardTitle>
           <CardDescription>
-            View all maintenance requests from residents in the building
+            Your maintenance requests ({myTickets.length} tickets)
           </CardDescription>
         </CardHeader>
       </Card>
 
-      {/* Filter Section */}
+      <div className="space-y-4">
+        {myTickets.length > 0 ? (
+          myTickets.map(renderTicketCard)
+        ) : (
+          <Card>
+            <CardContent className="text-center py-8">
+              <CheckCircle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <p className="text-gray-500">You haven't submitted any tickets yet</p>
+              <p className="text-sm text-gray-400 mt-1">
+                Use the "Report Issue" section to submit a new maintenance request
+              </p>
+            </CardContent>
+          </Card>
+        )}
+      </div>
+
+      {/* Others' Tickets Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Other Residents' Tickets</CardTitle>
+          <CardDescription>
+            View maintenance requests from other residents in the building
+          </CardDescription>
+        </CardHeader>
+      </Card>
+
+      {/* Filter Section for Others' Tickets */}
       <Card>
         <CardContent className="pt-6">
           <div className="flex items-center gap-4">
             <Filter className="h-4 w-4 text-gray-500" />
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <Select value={othersStatusFilter} onValueChange={setOthersStatusFilter}>
               <SelectTrigger className="w-48">
                 <SelectValue placeholder="Filter by status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Tickets ({tickets.length})</SelectItem>
-                <SelectItem value="unassigned">Unassigned ({unassignedTickets.length})</SelectItem>
-                <SelectItem value="in-progress">In Progress ({inProgressTickets.length})</SelectItem>
-                <SelectItem value="resolved">Resolved ({resolvedTickets.length})</SelectItem>
+                <SelectItem value="all">All Tickets ({othersTickets.length})</SelectItem>
+                <SelectItem value="unassigned">Unassigned ({othersTickets.filter(t => t.status === 'unassigned').length})</SelectItem>
+                <SelectItem value="in-progress">In Progress ({othersTickets.filter(t => t.status === 'in-progress').length})</SelectItem>
+                <SelectItem value="resolved">Resolved ({othersTickets.filter(t => t.status === 'resolved').length})</SelectItem>
               </SelectContent>
             </Select>
           </div>
         </CardContent>
       </Card>
 
-      {/* Tickets List */}
+      {/* Others' Tickets List */}
       <div className="space-y-4">
-        {filteredTickets.length > 0 ? (
-          filteredTickets.map((ticket) => (
-            <Card key={ticket.id} className={`border-l-4 ${getStatusBorderColor(ticket.status)}`}>
-              <CardHeader className="pb-3">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <CardTitle className="text-lg">#{ticket.id} - {ticket.title}</CardTitle>
-                    <CardDescription className="mt-1">
-                      Submitted by {ticket.tenant} (Apt {ticket.apartment}) on {ticket.createdAt}
-                    </CardDescription>
-                  </div>
-                  <div className="flex space-x-2">
-                    <Badge variant={getStatusColor(ticket.status) as any}>
-                      {getStatusIcon(ticket.status)}
-                      <span className="ml-1 capitalize">{ticket.status.replace('-', ' ')}</span>
-                    </Badge>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-600 mb-4">{ticket.description}</p>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4 text-sm text-gray-500">
-                    <span className="flex items-center">
-                      <Wrench className="h-4 w-4 mr-1" />
-                      {ticket.category}
-                    </span>
-                    {ticket.assignedTo && (
-                      <span className="flex items-center">
-                        <User className="h-4 w-4 mr-1" />
-                        {ticket.assignedTo}
-                      </span>
-                    )}
-                  </div>
-                  <Button variant="outline" size="sm">
-                    <MessageSquare className="h-4 w-4 mr-1" />
-                    Add Comment
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))
+        {filteredOthersTickets.length > 0 ? (
+          filteredOthersTickets.map(renderTicketCard)
         ) : (
           <Card>
             <CardContent className="text-center py-8">
