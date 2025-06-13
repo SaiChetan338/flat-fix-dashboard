@@ -1,9 +1,10 @@
+
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Clock, User, Wrench, CheckCircle, AlertCircle, MessageSquare, Filter } from 'lucide-react';
+import { Clock, Wrench, CheckCircle, AlertCircle, MessageSquare, Filter } from 'lucide-react';
 
 interface User {
   name: string;
@@ -23,7 +24,6 @@ interface Ticket {
   createdAt: string;
   tenant: string;
   apartment: string;
-  assignedTo?: string;
 }
 
 const TenantTicketList = ({ user }: TenantTicketListProps) => {
@@ -36,8 +36,7 @@ const TenantTicketList = ({ user }: TenantTicketListProps) => {
       status: 'in-progress',
       createdAt: '2024-01-15',
       tenant: 'John Doe',
-      apartment: '2A',
-      assignedTo: 'Mike Johnson (Plumber)'
+      apartment: '2A'
     },
     {
       id: 'TKT002',
@@ -57,8 +56,7 @@ const TenantTicketList = ({ user }: TenantTicketListProps) => {
       status: 'resolved',
       createdAt: '2024-01-10',
       tenant: 'Bob Wilson',
-      apartment: '1C',
-      assignedTo: 'Sarah Davis (Electrician)'
+      apartment: '1C'
     },
     {
       id: 'TKT004',
@@ -68,8 +66,7 @@ const TenantTicketList = ({ user }: TenantTicketListProps) => {
       status: 'in-progress',
       createdAt: '2024-01-12',
       tenant: 'Alice Brown',
-      apartment: '4A',
-      assignedTo: 'Maintenance Team'
+      apartment: '4A'
     },
     {
       id: 'TKT005',
@@ -83,7 +80,7 @@ const TenantTicketList = ({ user }: TenantTicketListProps) => {
     }
   ]);
 
-  const [othersStatusFilter, setOthersStatusFilter] = useState<string>('all');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -112,17 +109,23 @@ const TenantTicketList = ({ user }: TenantTicketListProps) => {
     }
   };
 
-  // Get current user's tickets (assuming we identify by tenant name)
-  const myTickets = tickets.filter(ticket => ticket.tenant === user.name);
-  
-  // Get other users' tickets
-  const othersTickets = tickets.filter(ticket => ticket.tenant !== user.name);
+  // Filter tickets based on selected filter
+  const getFilteredTickets = () => {
+    switch (statusFilter) {
+      case 'my-tickets':
+        return tickets.filter(ticket => ticket.tenant === user.name);
+      case 'unassigned':
+        return tickets.filter(ticket => ticket.status === 'unassigned');
+      case 'in-progress':
+        return tickets.filter(ticket => ticket.status === 'in-progress');
+      case 'completed':
+        return tickets.filter(ticket => ticket.status === 'resolved');
+      default:
+        return tickets;
+    }
+  };
 
-  // Filter others' tickets based on status filter
-  const filteredOthersTickets = othersTickets.filter(ticket => {
-    if (othersStatusFilter === 'all') return true;
-    return ticket.status === othersStatusFilter;
-  });
+  const filteredTickets = getFilteredTickets();
 
   const renderTicketCard = (ticket: Ticket) => (
     <Card key={ticket.id} className={`border-l-4 ${getStatusBorderColor(ticket.status)}`}>
@@ -162,73 +165,48 @@ const TenantTicketList = ({ user }: TenantTicketListProps) => {
 
   return (
     <div className="space-y-6">
-      {/* My Tickets Section */}
+      {/* Tickets Section */}
       <Card>
         <CardHeader>
-          <CardTitle>My Tickets</CardTitle>
+          <CardTitle>Tickets</CardTitle>
           <CardDescription>
-            Your maintenance requests ({myTickets.length} tickets)
+            View and manage maintenance requests
           </CardDescription>
         </CardHeader>
       </Card>
 
-      <div className="space-y-4">
-        {myTickets.length > 0 ? (
-          myTickets.map(renderTicketCard)
-        ) : (
-          <Card>
-            <CardContent className="text-center py-8">
-              <CheckCircle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-500">You haven't submitted any tickets yet</p>
-              <p className="text-sm text-gray-400 mt-1">
-                Use the "Report Issue" section to submit a new maintenance request
-              </p>
-            </CardContent>
-          </Card>
-        )}
-      </div>
-
-      {/* Others' Tickets Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Other Residents' Tickets</CardTitle>
-          <CardDescription>
-            View maintenance requests from other residents in the building
-          </CardDescription>
-        </CardHeader>
-      </Card>
-
-      {/* Filter Section for Others' Tickets */}
+      {/* Filter Section */}
       <Card>
         <CardContent className="pt-6">
           <div className="flex items-center gap-4">
             <Filter className="h-4 w-4 text-gray-500" />
-            <Select value={othersStatusFilter} onValueChange={setOthersStatusFilter}>
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="w-48">
-                <SelectValue placeholder="Filter by status" />
+                <SelectValue placeholder="Filter tickets" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Tickets ({othersTickets.length})</SelectItem>
-                <SelectItem value="unassigned">Unassigned ({othersTickets.filter(t => t.status === 'unassigned').length})</SelectItem>
-                <SelectItem value="in-progress">In Progress ({othersTickets.filter(t => t.status === 'in-progress').length})</SelectItem>
-                <SelectItem value="resolved">Resolved ({othersTickets.filter(t => t.status === 'resolved').length})</SelectItem>
+                <SelectItem value="all">All Tickets ({tickets.length})</SelectItem>
+                <SelectItem value="my-tickets">My Tickets ({tickets.filter(t => t.tenant === user.name).length})</SelectItem>
+                <SelectItem value="unassigned">Unassigned ({tickets.filter(t => t.status === 'unassigned').length})</SelectItem>
+                <SelectItem value="in-progress">In Progress ({tickets.filter(t => t.status === 'in-progress').length})</SelectItem>
+                <SelectItem value="completed">Completed ({tickets.filter(t => t.status === 'resolved').length})</SelectItem>
               </SelectContent>
             </Select>
           </div>
         </CardContent>
       </Card>
 
-      {/* Others' Tickets List */}
+      {/* Tickets List */}
       <div className="space-y-4">
-        {filteredOthersTickets.length > 0 ? (
-          filteredOthersTickets.map(renderTicketCard)
+        {filteredTickets.length > 0 ? (
+          filteredTickets.map(renderTicketCard)
         ) : (
           <Card>
             <CardContent className="text-center py-8">
               <CheckCircle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
               <p className="text-gray-500">No tickets found for the selected filter</p>
               <p className="text-sm text-gray-400 mt-1">
-                Try selecting a different status filter
+                Try selecting a different filter or submit a new maintenance request
               </p>
             </CardContent>
           </Card>

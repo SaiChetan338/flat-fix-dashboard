@@ -43,7 +43,7 @@ const TenantDashboard = ({ user }: TenantDashboardProps) => {
   ];
 
   const menuItems = [
-    { id: 'tickets', label: 'All Tickets', icon: Ticket },
+    { id: 'tickets', label: 'Tickets', icon: Ticket },
     { id: 'create', label: 'Report Issue', icon: Plus },
     { id: 'technicians', label: 'Technicians', icon: Wrench },
     { id: 'neighbors', label: 'My Neighbors', icon: Users },
