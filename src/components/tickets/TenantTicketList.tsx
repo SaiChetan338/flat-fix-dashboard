@@ -19,7 +19,6 @@ interface Ticket {
   title: string;
   description: string;
   category: string;
-  priority: string;
   status: 'open' | 'in-progress' | 'resolved';
   createdAt: string;
   assignedTo?: string;
@@ -33,7 +32,6 @@ const TenantTicketList = ({ user }: TenantTicketListProps) => {
       title: 'Leaking Faucet in Kitchen',
       description: 'The kitchen faucet has been leaking for 2 days. Water is dripping constantly.',
       category: 'Plumbing',
-      priority: 'medium',
       status: 'in-progress',
       createdAt: '2024-01-15',
       assignedTo: 'Mike Johnson (Plumber)',
@@ -44,7 +42,6 @@ const TenantTicketList = ({ user }: TenantTicketListProps) => {
       title: 'AC Unit Making Noise',
       description: 'The air conditioning unit is making unusual noises.',
       category: 'HVAC',
-      priority: 'low',
       status: 'open',
       createdAt: '2024-01-14'
     },
@@ -53,7 +50,6 @@ const TenantTicketList = ({ user }: TenantTicketListProps) => {
       title: 'Electrical Outlet Fixed',
       description: 'The outlet in the living room was not working.',
       category: 'Electrical',
-      priority: 'high',
       status: 'resolved',
       createdAt: '2024-01-10',
       assignedTo: 'Sarah Davis (Electrician)'
@@ -75,15 +71,6 @@ const TenantTicketList = ({ user }: TenantTicketListProps) => {
       case 'in-progress': return 'default';
       case 'resolved': return 'secondary';
       default: return 'outline';
-    }
-  };
-
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'high': return 'bg-red-100 text-red-800';
-      case 'medium': return 'bg-yellow-100 text-yellow-800';
-      case 'low': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
     }
   };
 
@@ -116,9 +103,6 @@ const TenantTicketList = ({ user }: TenantTicketListProps) => {
                     </CardDescription>
                   </div>
                   <div className="flex space-x-2">
-                    <Badge className={getPriorityColor(ticket.priority)}>
-                      {ticket.priority}
-                    </Badge>
                     <Badge variant={getStatusColor(ticket.status) as any}>
                       {getStatusIcon(ticket.status)}
                       <span className="ml-1 capitalize">{ticket.status.replace('-', ' ')}</span>
@@ -134,18 +118,6 @@ const TenantTicketList = ({ user }: TenantTicketListProps) => {
                       <Wrench className="h-4 w-4 mr-1" />
                       {ticket.category}
                     </span>
-                    {ticket.assignedTo && (
-                      <span className="flex items-center">
-                        <User className="h-4 w-4 mr-1" />
-                        {ticket.assignedTo}
-                      </span>
-                    )}
-                    {ticket.estimatedCompletion && (
-                      <span className="flex items-center">
-                        <Clock className="h-4 w-4 mr-1" />
-                        Est. completion: {ticket.estimatedCompletion}
-                      </span>
-                    )}
                   </div>
                   <Button variant="outline" size="sm">
                     <MessageSquare className="h-4 w-4 mr-1" />
@@ -173,9 +145,6 @@ const TenantTicketList = ({ user }: TenantTicketListProps) => {
                     </CardDescription>
                   </div>
                   <div className="flex space-x-2">
-                    <Badge className={getPriorityColor(ticket.priority)}>
-                      {ticket.priority}
-                    </Badge>
                     <Badge variant="secondary">
                       <CheckCircle className="h-4 w-4 mr-1" />
                       Resolved
@@ -191,12 +160,6 @@ const TenantTicketList = ({ user }: TenantTicketListProps) => {
                       <Wrench className="h-4 w-4 mr-1" />
                       {ticket.category}
                     </span>
-                    {ticket.assignedTo && (
-                      <span className="flex items-center">
-                        <User className="h-4 w-4 mr-1" />
-                        {ticket.assignedTo}
-                      </span>
-                    )}
                   </div>
                   <Button variant="outline" size="sm">
                     Rate Service

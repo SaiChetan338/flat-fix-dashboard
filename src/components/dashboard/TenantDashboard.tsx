@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Building2, Plus, Ticket, LogOut, Menu, X, Wrench, Users, DollarSign, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -38,8 +37,7 @@ const TenantDashboard = ({ user }: TenantDashboardProps) => {
 
   const stats = [
     { title: 'Active Tickets', value: '3', description: 'Currently open requests' },
-    { title: 'Resolved', value: '12', description: 'Issues resolved this year' },
-    { title: 'Average Response', value: '2.5 hrs', description: 'Typical response time' }
+    { title: 'Resolved', value: '12', description: 'Issues resolved this year' }
   ];
 
   const menuItems = [
@@ -172,7 +170,7 @@ const TenantDashboard = ({ user }: TenantDashboardProps) => {
           {activeView === 'tickets' && (
             <div className="space-y-6">
               {/* Stats Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {stats.map((stat, index) => (
                   <Card key={index}>
                     <CardHeader className="pb-3">
