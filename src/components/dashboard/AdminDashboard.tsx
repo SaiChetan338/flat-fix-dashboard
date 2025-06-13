@@ -5,9 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import TicketManagement from '@/components/tickets/TicketManagement';
-import TenantManagement from '@/components/tenants/TenantManagement';
 import TechnicianManagement from '@/components/technicians/TechnicianManagement';
-import TechniciansList from '@/components/technicians/TechniciansList';
 import NeighborsList from '@/components/neighbors/NeighborsList';
 import MaintenanceHistory from '@/components/maintenance/MaintenanceHistory';
 import ProfilePage from '@/components/profile/ProfilePage';
@@ -47,9 +45,7 @@ const AdminDashboard = ({ user }: AdminDashboardProps) => {
   const menuItems = [
     { id: 'overview', label: 'Overview', icon: Building2 },
     { id: 'tickets', label: 'Tickets', icon: Ticket },
-    { id: 'tenants', label: 'Tenants', icon: Users },
-    { id: 'technicians-mgmt', label: 'Manage Technicians', icon: Wrench },
-    { id: 'technicians-list', label: 'Technicians', icon: Wrench },
+    { id: 'technicians', label: 'Technicians', icon: Wrench },
     { id: 'neighbors', label: 'All Residents', icon: Users },
     { id: 'maintenance', label: 'Maintenance', icon: DollarSign }
   ];
@@ -196,16 +192,12 @@ const AdminDashboard = ({ user }: AdminDashboardProps) => {
                   <CardDescription>Manage your property efficiently</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <Button onClick={() => setActiveTab('tickets')} className="h-20 flex-col space-y-2">
                       <Ticket className="h-6 w-6" />
                       <span>Manage Tickets</span>
                     </Button>
-                    <Button onClick={() => setActiveTab('tenants')} variant="outline" className="h-20 flex-col space-y-2">
-                      <Users className="h-6 w-6" />
-                      <span>View Tenants</span>
-                    </Button>
-                    <Button onClick={() => setActiveTab('technicians-mgmt')} variant="outline" className="h-20 flex-col space-y-2">
+                    <Button onClick={() => setActiveTab('technicians')} variant="outline" className="h-20 flex-col space-y-2">
                       <Wrench className="h-6 w-6" />
                       <span>Manage Technicians</span>
                     </Button>
@@ -216,15 +208,7 @@ const AdminDashboard = ({ user }: AdminDashboardProps) => {
           )}
 
           {activeTab === 'tickets' && <TicketManagement />}
-          {activeTab === 'tenants' && <TenantManagement />}
-          {activeTab === 'technicians-mgmt' && <TechnicianManagement />}
-          
-          {activeTab === 'technicians-list' && (
-            <TechniciansList 
-              apartmentCode={user.apartmentCode || ''} 
-              isAdmin={true}
-            />
-          )}
+          {activeTab === 'technicians' && <TechnicianManagement />}
 
           {activeTab === 'neighbors' && (
             <NeighborsList 

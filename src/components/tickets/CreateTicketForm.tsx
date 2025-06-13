@@ -10,7 +10,7 @@ import { toast } from '@/hooks/use-toast';
 
 interface User {
   name: string;
-  apartmentNumber?: string;
+  flatNumber?: string;
 }
 
 interface CreateTicketFormProps {
@@ -68,7 +68,7 @@ const CreateTicketForm = ({ user, onSuccess }: CreateTicketFormProps) => {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="name">First Name</Label>
+                <Label htmlFor="name">Name</Label>
                 <Input
                   id="name"
                   value={user.name}
@@ -78,10 +78,10 @@ const CreateTicketForm = ({ user, onSuccess }: CreateTicketFormProps) => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="apartment">Apartment ID</Label>
+                <Label htmlFor="flatNumber">Flat Number</Label>
                 <Input
-                  id="apartment"
-                  value={user.apartmentNumber || ''}
+                  id="flatNumber"
+                  value={user.flatNumber || ''}
                   disabled
                   className="bg-gray-100"
                 />

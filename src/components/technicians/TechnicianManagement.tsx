@@ -86,10 +86,6 @@ const TechnicianManagement = () => {
     return <Wrench className="h-4 w-4" />;
   };
 
-  const totalTechnicians = technicians.length;
-  const availableTechnicians = technicians.filter(t => t.status === 'available').length;
-  const activeTasks = technicians.reduce((sum, tech) => sum + tech.activeJobs, 0);
-
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -100,38 +96,7 @@ const TechnicianManagement = () => {
         </Button>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card>
-          <CardHeader className="pb-3">
-            <CardDescription>Total Technicians</CardDescription>
-            <CardTitle className="text-3xl">{totalTechnicians}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-gray-600">Registered contractors</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-3">
-            <CardDescription>Available Now</CardDescription>
-            <CardTitle className="text-3xl">{availableTechnicians}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-gray-600">Ready for assignments</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-3">
-            <CardDescription>Active Tasks</CardDescription>
-            <CardTitle className="text-3xl">{activeTasks}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-gray-600">Currently in progress</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Search and Filter */}
+      {/* Technician Directory */}
       <Card>
         <CardHeader>
           <CardTitle>Technician Directory</CardTitle>
