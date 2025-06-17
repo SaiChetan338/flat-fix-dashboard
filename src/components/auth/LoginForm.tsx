@@ -24,33 +24,65 @@ const LoginForm = ({ onBack, onSwitchToSignup }: LoginFormProps) => {
     e.preventDefault();
     setIsLoading(true);
 
+    // Demo credentials for testing
+    const demoUsers = [
+      {
+        phone: '+1234567890',
+        password: 'admin123',
+        role: 'admin',
+        name: 'Admin John Smith',
+        flatNumber: '101',
+        numberOfFlats: 3,
+        ownedFlats: ['101', '102', '103'],
+        apartmentCode: 'DEMO001'
+      },
+      {
+        phone: '+1234567891',
+        password: 'resident123',
+        role: 'tenant',
+        name: 'Resident Jane Doe',
+        flatNumber: '201',
+        numberOfFlats: 2,
+        ownedFlats: ['201', '202'],
+        apartmentCode: 'DEMO001'
+      },
+      {
+        phone: '+1234567892',
+        password: 'resident456',
+        role: 'tenant',
+        name: 'Resident Mike Wilson',
+        flatNumber: '301',
+        numberOfFlats: 1,
+        ownedFlats: ['301'],
+        apartmentCode: 'DEMO001'
+      },
+      {
+        phone: '+1234567893',
+        password: 'admin456',
+        role: 'admin',
+        name: 'Admin Sarah Johnson',
+        flatNumber: '401',
+        numberOfFlats: 4,
+        ownedFlats: ['401', '402', '403', '404'],
+        apartmentCode: 'DEMO002'
+      }
+    ];
+
     // Simulate API call
     setTimeout(() => {
-      // Demo credentials for testing
-      if (phone === '+1234567890' && password === 'admin123') {
-        localStorage.setItem('user', JSON.stringify({ 
-          phone, 
-          role: 'admin', 
-          name: 'Admin User',
-          flatNumber: 'A1',
-          apartmentCode: 'DEMO123'
-        }));
-        toast({ title: 'Welcome back!', description: 'Logged in successfully as Admin' });
-        navigate('/dashboard');
-      } else if (phone === '+1987654321' && password === 'resident123') {
-        localStorage.setItem('user', JSON.stringify({ 
-          phone, 
-          role: 'tenant', 
-          name: 'John Doe',
-          flatNumber: 'B2',
-          apartmentCode: 'DEMO123'
-        }));
-        toast({ title: 'Welcome back!', description: 'Logged in successfully as Resident' });
+      const user = demoUsers.find(u => u.phone === phone && u.password === password);
+      
+      if (user) {
+        localStorage.setItem('user', JSON.stringify(user));
+        toast({ 
+          title: 'Welcome back!', 
+          description: `Logged in successfully as ${user.role === 'admin' ? 'Admin' : 'Resident'}` 
+        });
         navigate('/dashboard');
       } else {
         toast({ 
           title: 'Login failed', 
-          description: 'Invalid credentials. Try +1234567890/admin123 or +1987654321/resident123',
+          description: 'Invalid credentials. Please use the demo credentials provided below.',
           variant: 'destructive'
         });
       }
@@ -137,9 +169,33 @@ const LoginForm = ({ onBack, onSwitchToSignup }: LoginFormProps) => {
           </div>
 
           <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-            <p className="text-sm text-gray-600 mb-2 font-medium">Demo Credentials:</p>
-            <p className="text-xs text-gray-500">Admin: +1234567890 / admin123</p>
-            <p className="text-xs text-gray-500">Resident: +1987654321 / resident123</p>
+            <p className="text-sm text-gray-600 mb-3 font-medium">Demo Credentials (Copy & Paste):</p>
+            
+            <div className="space-y-3">
+              <div className="bg-white p-3 rounded border">
+                <p className="text-xs font-medium text-gray-700 mb-1">Admin (Multiple Flats):</p>
+                <p className="text-xs text-gray-600 font-mono">Phone: +1234567890</p>
+                <p className="text-xs text-gray-600 font-mono">Password: admin123</p>
+              </div>
+              
+              <div className="bg-white p-3 rounded border">
+                <p className="text-xs font-medium text-gray-700 mb-1">Admin (4 Flats):</p>
+                <p className="text-xs text-gray-600 font-mono">Phone: +1234567893</p>
+                <p className="text-xs text-gray-600 font-mono">Password: admin456</p>
+              </div>
+              
+              <div className="bg-white p-3 rounded border">
+                <p className="text-xs font-medium text-gray-700 mb-1">Resident (Multiple Flats):</p>
+                <p className="text-xs text-gray-600 font-mono">Phone: +1234567891</p>
+                <p className="text-xs text-gray-600 font-mono">Password: resident123</p>
+              </div>
+              
+              <div className="bg-white p-3 rounded border">
+                <p className="text-xs font-medium text-gray-700 mb-1">Resident (Single Flat):</p>
+                <p className="text-xs text-gray-600 font-mono">Phone: +1234567892</p>
+                <p className="text-xs text-gray-600 font-mono">Password: resident456</p>
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>
