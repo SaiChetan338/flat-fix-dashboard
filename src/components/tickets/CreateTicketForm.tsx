@@ -11,6 +11,7 @@ import { toast } from '@/hooks/use-toast';
 interface User {
   name: string;
   flatNumber?: string;
+  selectedFlat?: string;
 }
 
 interface CreateTicketFormProps {
@@ -55,6 +56,9 @@ const CreateTicketForm = ({ user, onSuccess }: CreateTicketFormProps) => {
     'Others'
   ];
 
+  // Use selectedFlat if available, otherwise fallback to flatNumber
+  const displayFlatNumber = user.selectedFlat || user.flatNumber || '';
+
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <Card>
@@ -81,7 +85,7 @@ const CreateTicketForm = ({ user, onSuccess }: CreateTicketFormProps) => {
                 <Label htmlFor="flatNumber">Flat Number</Label>
                 <Input
                   id="flatNumber"
-                  value={user.flatNumber || ''}
+                  value={displayFlatNumber}
                   disabled
                   className="bg-gray-100"
                 />

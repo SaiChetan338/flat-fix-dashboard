@@ -1,10 +1,11 @@
 
 import { useState } from 'react';
-import { Building2, Ticket, Users, Wrench, LogOut, Menu, X, DollarSign, User } from 'lucide-react';
+import { Building2, Ticket, Users, Wrench, LogOut, Menu, X, DollarSign, User, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import TicketManagement from '@/components/tickets/TicketManagement';
+import CreateTicketForm from '@/components/tickets/CreateTicketForm';
 import TechnicianManagement from '@/components/technicians/TechnicianManagement';
 import NeighborsList from '@/components/neighbors/NeighborsList';
 import MaintenanceHistory from '@/components/maintenance/MaintenanceHistory';
@@ -45,6 +46,7 @@ const AdminDashboard = ({ user }: AdminDashboardProps) => {
   const menuItems = [
     { id: 'overview', label: 'Overview', icon: Building2 },
     { id: 'tickets', label: 'Tickets', icon: Ticket },
+    { id: 'create-ticket', label: 'Report Issue', icon: Plus },
     { id: 'technicians', label: 'Technicians', icon: Wrench },
     { id: 'neighbors', label: 'All Residents', icon: Users },
     { id: 'maintenance', label: 'Maintenance', icon: DollarSign }
@@ -52,6 +54,7 @@ const AdminDashboard = ({ user }: AdminDashboardProps) => {
 
   const getPageTitle = () => {
     if (activeTab === 'profile') return 'My Profile';
+    if (activeTab === 'create-ticket') return 'Report Issue';
     const item = menuItems.find(item => item.id === activeTab);
     return item?.label || 'Dashboard';
   };
@@ -208,6 +211,14 @@ const AdminDashboard = ({ user }: AdminDashboardProps) => {
           )}
 
           {activeTab === 'tickets' && <TicketManagement />}
+          
+          {activeTab === 'create-ticket' && (
+            <CreateTicketForm 
+              user={user} 
+              onSuccess={() => setActiveTab('tickets')} 
+            />
+          )}
+          
           {activeTab === 'technicians' && <TechnicianManagement />}
 
           {activeTab === 'neighbors' && (
