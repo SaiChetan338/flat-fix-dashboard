@@ -10,7 +10,10 @@ interface User {
   role: string;
   name: string;
   flatNumber?: string;
+  numberOfFlats?: number;
+  ownedFlats?: string[];
   apartmentCode?: string;
+  selectedFlat?: string;
 }
 
 const Dashboard = () => {
@@ -21,6 +24,47 @@ const Dashboard = () => {
   useEffect(() => {
     const userData = localStorage.getItem('user');
     if (!userData) {
+      // Add demo credentials for testing
+      const demoUsers = [
+        {
+          phone: '+1234567890',
+          role: 'admin',
+          name: 'Admin John Smith',
+          flatNumber: '101',
+          numberOfFlats: 3,
+          ownedFlats: ['101', '102', '103'],
+          apartmentCode: 'DEMO001'
+        },
+        {
+          phone: '+1234567891',
+          role: 'tenant',
+          name: 'Resident Jane Doe',
+          flatNumber: '201',
+          numberOfFlats: 2,
+          ownedFlats: ['201', '202'],
+          apartmentCode: 'DEMO001'
+        },
+        {
+          phone: '+1234567892',
+          role: 'tenant',
+          name: 'Resident Mike Wilson',
+          flatNumber: '301',
+          numberOfFlats: 1,
+          ownedFlats: ['301'],
+          apartmentCode: 'DEMO001'
+        },
+        {
+          phone: '+1234567893',
+          role: 'admin',
+          name: 'Admin Sarah Johnson',
+          flatNumber: '401',
+          numberOfFlats: 4,
+          ownedFlats: ['401', '402', '403', '404'],
+          apartmentCode: 'DEMO002'
+        }
+      ];
+      
+      console.log('Demo credentials available:', demoUsers);
       toast({ 
         title: 'Access denied', 
         description: 'Please log in to access the dashboard',

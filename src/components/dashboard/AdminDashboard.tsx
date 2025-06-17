@@ -10,6 +10,7 @@ import TechnicianManagement from '@/components/technicians/TechnicianManagement'
 import NeighborsList from '@/components/neighbors/NeighborsList';
 import MaintenanceHistory from '@/components/maintenance/MaintenanceHistory';
 import ProfilePage from '@/components/profile/ProfilePage';
+import FlatSelector from '@/components/dashboard/FlatSelector';
 import { useNavigate } from 'react-router-dom';
 import { toast } from '@/hooks/use-toast';
 
@@ -18,7 +19,10 @@ interface User {
   role: string;
   name: string;
   flatNumber?: string;
+  numberOfFlats?: number;
+  ownedFlats?: string[];
   apartmentCode?: string;
+  selectedFlat?: string;
 }
 
 interface AdminDashboardProps {
@@ -28,12 +32,20 @@ interface AdminDashboardProps {
 const AdminDashboard = ({ user }: AdminDashboardProps) => {
   const [activeTab, setActiveTab] = useState('overview');
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [selectedFlat, setSelectedFlat] = useState(user.selectedFlat || user.flatNumber || '');
   const navigate = useNavigate();
 
   const handleLogout = () => {
     localStorage.removeItem('user');
     toast({ title: 'Logged out', description: 'You have been logged out successfully' });
     navigate('/');
+  };
+
+  const handleFlatChange = (flat: string) => {
+    setSelectedFlat(flat);
+    // Update user object with selected flat for components that need it
+    const updatedUser = { ...user, selectedFlat: flat };
+    localStorage.setItem('user', JSON.stringify(updatedUser));
   };
 
   const stats = [
@@ -58,6 +70,8 @@ const AdminDashboard = ({ user }: AdminDashboardProps) => {
     const item = menuItems.find(item => item.id === activeTab);
     return item?.label || 'Dashboard';
   };
+
+  const userWithSelectedFlat = { ...user, selectedFlat };
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -162,15 +176,22 @@ const AdminDashboard = ({ user }: AdminDashboardProps) => {
                 {getPageTitle()}
               </h1>
             </div>
-            <Badge variant="secondary" className="hidden sm:inline-flex">
-              Admin Panel
-            </Badge>
+            <div className="flex items-center space-x-4">
+              <FlatSelector 
+                ownedFlats={user.ownedFlats || [user.flatNumber || '']}
+                selectedFlat={selectedFlat}
+                onFlatChange={handleFlatChange}
+              />
+              <Badge variant="secondary" className="hidden sm:inline-flex">
+                Admin Panel
+              </Badge>
+            </div>
           </div>
         </header>
 
         {/* Content */}
         <main className="flex-1 overflow-auto p-4 lg:p-6">
-          {activeTab === 'profile' && <ProfilePage user={user} />}
+          {activeTab === 'profile' && <ProfilePage user={userWithSelectedFlat} />}
           
           {activeTab === 'overview' && (
             <div className="space-y-6">
@@ -214,7 +235,7 @@ const AdminDashboard = ({ user }: AdminDashboardProps) => {
           
           {activeTab === 'create-ticket' && (
             <CreateTicketForm 
-              user={user} 
+              user={userWithSelectedFlat} 
               onSuccess={() => setActiveTab('tickets')} 
             />
           )}

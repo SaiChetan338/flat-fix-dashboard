@@ -12,6 +12,7 @@ const AdminRegistration = () => {
   const [formData, setFormData] = useState({
     phone: '',
     flatNumber: '',
+    numberOfFlats: '1',
     apartmentCode: '',
     password: '',
     confirmPassword: ''
@@ -71,7 +72,22 @@ const AdminRegistration = () => {
       return;
     }
 
+    if (parseInt(formData.numberOfFlats) < 1) {
+      toast({ 
+        title: 'Invalid number of flats', 
+        description: 'Number of flats must be at least 1',
+        variant: 'destructive'
+      });
+      return;
+    }
+
     setIsLoading(true);
+
+    // Generate flat numbers array based on the number of flats owned
+    const numberOfFlats = parseInt(formData.numberOfFlats);
+    const flats = numberOfFlats === 1 
+      ? [formData.flatNumber] 
+      : Array.from({ length: numberOfFlats }, (_, i) => `${formData.flatNumber}-${i + 1}`);
 
     // Simulate API call
     setTimeout(() => {
@@ -80,6 +96,8 @@ const AdminRegistration = () => {
         role: 'admin', 
         name: `Admin of ${apartmentName}`,
         flatNumber: formData.flatNumber,
+        numberOfFlats: parseInt(formData.numberOfFlats),
+        ownedFlats: flats,
         apartmentCode: formData.apartmentCode
       }));
       
@@ -130,12 +148,25 @@ const AdminRegistration = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="flatNumber">Flat Number</Label>
+              <Label htmlFor="flatNumber">Primary Flat Number</Label>
               <Input
                 id="flatNumber"
                 value={formData.flatNumber}
                 onChange={(e) => handleChange('flatNumber', e.target.value)}
                 placeholder="e.g., 2A, 15B, 101"
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="numberOfFlats">Number of Flats Owned</Label>
+              <Input
+                id="numberOfFlats"
+                type="number"
+                min="1"
+                value={formData.numberOfFlats}
+                onChange={(e) => handleChange('numberOfFlats', e.target.value)}
+                placeholder="How many flats do you own?"
                 required
               />
             </div>
