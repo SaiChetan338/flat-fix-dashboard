@@ -11,17 +11,32 @@ import { toast } from '@/hooks/use-toast';
 const ResidentRegistration = () => {
   const [formData, setFormData] = useState({
     phone: '',
-    flatNumber: '',
     numberOfFlats: '1',
     apartmentCode: '',
     password: ''
   });
+  const [flatNumbers, setFlatNumbers] = useState<string[]>(['']);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    
+    // Update flat number fields when numberOfFlats changes
+    if (field === 'numberOfFlats') {
+      const numFlats = parseInt(value) || 1;
+      const newFlatNumbers = Array(numFlats).fill('').map((_, index) => 
+        flatNumbers[index] || ''
+      );
+      setFlatNumbers(newFlatNumbers);
+    }
+  };
+
+  const handleFlatNumberChange = (index: number, value: string) => {
+    const newFlatNumbers = [...flatNumbers];
+    newFlatNumbers[index] = value;
+    setFlatNumbers(newFlatNumbers);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -63,23 +78,28 @@ const ResidentRegistration = () => {
       return;
     }
 
-    setIsLoading(true);
+    // Check if all flat numbers are filled
+    const emptyFlats = flatNumbers.some(flat => !flat.trim());
+    if (emptyFlats) {
+      toast({ 
+        title: 'Missing flat numbers', 
+        description: 'Please enter all flat numbers',
+        variant: 'destructive'
+      });
+      return;
+    }
 
-    // Generate flat numbers array based on the number of flats owned
-    const numberOfFlats = parseInt(formData.numberOfFlats);
-    const flats = numberOfFlats === 1 
-      ? [formData.flatNumber] 
-      : Array.from({ length: numberOfFlats }, (_, i) => `${formData.flatNumber}-${i + 1}`);
+    setIsLoading(true);
 
     // Simulate API call
     setTimeout(() => {
       localStorage.setItem('user', JSON.stringify({ 
         phone: formData.phone, 
         role: 'tenant', 
-        name: `Resident of Flat ${formData.flatNumber}`,
-        flatNumber: formData.flatNumber,
+        name: `Resident of Flat ${flatNumbers[0]}`,
+        flatNumber: flatNumbers[0],
         numberOfFlats: parseInt(formData.numberOfFlats),
-        ownedFlats: flats,
+        ownedFlats: flatNumbers,
         apartmentCode: formData.apartmentCode
       }));
       
@@ -127,17 +147,6 @@ const ResidentRegistration = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="flatNumber">Primary Flat Number</Label>
-              <Input
-                id="flatNumber"
-                value={formData.flatNumber}
-                onChange={(e) => handleChange('flatNumber', e.target.value)}
-                placeholder="e.g., 2A, 15B, 101"
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
               <Label htmlFor="numberOfFlats">Number of Flats Owned</Label>
               <Input
                 id="numberOfFlats"
@@ -149,6 +158,22 @@ const ResidentRegistration = () => {
                 required
               />
             </div>
+
+            {/* Dynamic flat number fields */}
+            {flatNumbers.map((flatNumber, index) => (
+              <div key={index} className="space-y-2">
+                <Label htmlFor={`flat-${index}`}>
+                  {flatNumbers.length === 1 ? 'Flat Number' : `Flat ${index + 1} Number`}
+                </Label>
+                <Input
+                  id={`flat-${index}`}
+                  value={flatNumber}
+                  onChange={(e) => handleFlatNumberChange(index, e.target.value)}
+                  placeholder={`e.g., 2A, 15B, ${101 + index}`}
+                  required
+                />
+              </div>
+            ))}
 
             <div className="space-y-2">
               <Label htmlFor="apartmentCode">Apartment Code</Label>
